@@ -1,0 +1,25 @@
+This is an arduino project for an open source sprinkler control system.
+Requires an arduino with an Atmega328 or higher.
+
+Features:
+* Telnet server using the Wiznet ethernet module
+* Time functions using a DS1307
+* Watering Zones that can be manually turned on or off via telnet.
+* Scheduling to automatically turn zones on or off at certain times and days.
+* Telnet based menu system to perform the following commands:
+		?                                  Display this help
+		time                               Display current time
+		settime <Mon dd YYYY HH:ii:ss>     Set current time
+		mem                                Show free memory
+		on <1-8>                           Turn on zone
+		off                                Turn off all zones
+		list                               List all schedules
+		enable <1-64>                      Enable schedule
+		disable <1-64>                     Disable schedule
+		set <1-64>                         Modify schedule
+		rm <1-64>                          Remove schedule
+		clearall                           Remove ALL schedules
+		load                               Load schedule from EEPROM
+		save                               Save schedule to EEPROM
+		exit                               Disconnect
+
