@@ -12,22 +12,18 @@
 
 #include <SPI.h>
 #include <Ethernet.h>
-#include <EthernetDHCP.h>
+#include <EthernetDHCP.h> // http://gkaindl.com/software/arduino-ethernet
 
 #include <Wire.h>
-#include "RTClib.h"
+#include "RTClib.h" // https://github.com/adafruit/RTClib
 RTC_DS1307 RTC;
 DateTime now;
 
 // Ethernet settings
-byte mac[] = { 
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-byte ip[] = { 
-  192,168,1,200 };
-byte gateway[] = { 
-  192,168,1,1 };
-byte subnet[] = { 
-  255,255,255,0 };
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+// byte ip[] = { 192,168,1,200 };
+// byte gateway[] = { 192,168,1,1 };
+// byte subnet[] = { 255,255,255,0 };
 
 // Shift Register (Controls the Solid State Relays)
 int latchPin = 8; // Pin connected to ST_CP of 74HC595
@@ -44,7 +40,6 @@ byte zone5 = 1 << 4;
 byte zone6 = 1 << 5;
 byte zone7 = 1 << 6;
 byte zone8 = 1 << 7;
-
 
 // Telnet server
 Server server(23);
@@ -158,12 +153,6 @@ PROGMEM const char *stringHelp_table[] =
 
 char stringBuffer[70];
 
-void e_printHelp() {
-  for (int i = 0; i <= 15; i++) {
-    e_printHelpString(i);
-  }
-}
-
 // Functions
 int availableMemory() { // From http://www.faludi.com/itp/arduino/Arduino_Available_RAM_Test.pde
   int byteCounter = 0; // initialize a counter
@@ -228,6 +217,12 @@ void loadHelpString(int i) {
 void e_printString(int i) { // Print PROGMEM string to ethernet port
   loadString(i);
   client.print(stringBuffer);
+}
+
+void e_printHelp() {
+  for (int i = 0; i <= 15; i++) {
+    e_printHelpString(i);
+  }
 }
 
 void e_printHelpString(int i) { // Print PROGMEM string to ethernet port

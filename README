@@ -4,6 +4,7 @@ Requires an arduino with an Atmega328 or higher.
 Features:
 * Telnet server using the Wiznet ethernet module
 * Time functions using a DS1307
+* Controls transistors, triacs, relays or solid state relays via a 74HC595 shift register.
 * Watering Zones that can be manually turned on or off via telnet.
 * Scheduling to automatically turn zones on or off at certain times and days.
 * Telnet based menu system to perform the following commands:
