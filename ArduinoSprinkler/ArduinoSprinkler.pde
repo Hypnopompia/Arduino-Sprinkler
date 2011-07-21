@@ -78,10 +78,10 @@ prog_char string_1[] PROGMEM = "Enter ? for help\n";
 prog_char string_2[] PROGMEM = "\n\nTimeout disconnect.\n";
 prog_char string_3[] PROGMEM = "Set Schedule ";
 prog_char string_4[] PROGMEM = "Bytes free: ";
-prog_char string_5[] PROGMEM = "Days:\n 1: Everyday\n 2: Even Days\n 3: Odd Days\nDays [1]: ";
-prog_char string_6[] PROGMEM = "Hour: ";
-prog_char string_7[] PROGMEM = "Minute: ";
-prog_char string_8[] PROGMEM = "Zone (0 = off): ";
+prog_char string_5[] PROGMEM = "Days:\n 1: Everyday\n 2: Even Days\n 3: Odd Days\nDays ";
+prog_char string_6[] PROGMEM = "Hour ";
+prog_char string_7[] PROGMEM = "Minute ";
+prog_char string_8[] PROGMEM = "Zone (0 = off) ";
 prog_char string_9[] PROGMEM = "Schedule set\n";
 prog_char string_10[] PROGMEM = "Invalid command\n";
 prog_char string_11[] PROGMEM = " | ";
@@ -172,8 +172,7 @@ int availableMemory() { // From http://www.faludi.com/itp/arduino/Arduino_Availa
 
 void initializeSchedule() {
   for (int i = 0; i < SCHEDULELISTSIZE; i++) {
-    scheduleList[i] = (Schedule){
-      1,0,0,0,0,0    };
+    scheduleList[i] = (Schedule){ 1,0,1,0,0,0 };
   }
 }
 
@@ -353,25 +352,50 @@ void getReceivedText() {
       parseReceivedText();
       break;
     case 1: // Days
-      workingSchedule.days = command.toInt();
-      if (workingSchedule.days == 0) {
-        workingSchedule.days = 1;
+      if (command.length() > 0) {
+        workingSchedule.days = command.toInt();
+      } else {
+        workingSchedule.days = scheduleList[workingScheduleNumber-1].days;
       }
-      e_printString(6); // "Hour: "
+
+      e_printString(6); // "Hour "
+      
+      client.print("[");
+      client.print(scheduleList[workingScheduleNumber-1].hour, DEC);
+      client.print("]: ");
       shellState = 2;
       break;
     case 2: // Hour
-      workingSchedule.hour = command.toInt();
-      e_printString(7); // "Minute: "
+      if (command.length() > 0) {
+        workingSchedule.hour = command.toInt();
+      } else {
+        workingSchedule.hour = scheduleList[workingScheduleNumber-1].hour;
+      }
+
+      e_printString(7); // "Minute "
+      client.print("[");
+      client.print(scheduleList[workingScheduleNumber-1].minute, DEC);
+      client.print("]: ");
       shellState = 3;
       break;
     case 3: // Minute
-      workingSchedule.minute = command.toInt();
-      e_printString(8); // "Zone (0 = off): "
+      if (command.length() > 0) {
+        workingSchedule.minute = command.toInt();
+      } else {
+        workingSchedule.minute = scheduleList[workingScheduleNumber-1].minute;
+      }
+      e_printString(8); // "Zone (0 = off) "
+      client.print("[");
+      client.print(scheduleList[workingScheduleNumber-1].zone, DEC);
+      client.print("]: ");
       shellState = 4;
       break;
     case 4: // Zone
-      workingSchedule.zone = command.toInt();
+      if (command.length() > 0) {
+        workingSchedule.zone = command.toInt();
+      } else {
+        workingSchedule.zone = scheduleList[workingScheduleNumber-1].zone;
+      }
       workingSchedule.deleted = 0;
       workingSchedule.enabled = 1;
       scheduleList[workingScheduleNumber-1] = workingSchedule;
@@ -443,7 +467,10 @@ void parseReceivedText() {
       shellState = 1;
       e_printString(3); // "Set Schedule ";
       client.println(workingScheduleNumber);
-      e_printString(5);
+      e_printString(5); // "Days:\n 1: Everyday\n 2: Even Days\n 3: Odd Days\nDays "
+      client.print("[");
+      client.print(scheduleList[workingScheduleNumber-1].days, DEC);
+      client.print("]: ");
     }
   } 
   else if (cmd == "rm") {
@@ -487,7 +514,7 @@ void e_listSchedules() {
   for (int i = 0; i < SCHEDULELISTSIZE; i++) {
     if (scheduleList[i].deleted == 0) {
       // #
-      if (i < 10) {
+      if (i+1 < 10) {
         client.print(" ");
       }
       client.print(i+1);
