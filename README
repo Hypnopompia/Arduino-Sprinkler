@@ -49,3 +49,7 @@ Super simple schematic to wire up the atmega328 to the different components.
          (Shift regiter ST_CP) D8 | 14     15 | D9 (LED for DHCP status)
                                   +-----------+
                                    * = Free Pin
+
+
+Notes:
+	Whether a day is even or odd is calculated using the number of days since the Unix epoch, or Jan 1, 1970. This way, at the end of months with an odd number of days, we don't water twice in a row, or skip a day. Using this method gets us a nice consistent even/odd day pattern even though the current day of the month might not match with what the system calculates.

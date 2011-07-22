@@ -91,6 +91,8 @@ prog_char string_14[] PROGMEM = "Schedule loaded\n";
 prog_char string_15[] PROGMEM = "Time set to: ";
 prog_char string_16[] PROGMEM = "Schedule enabled\n";
 prog_char string_17[] PROGMEM = "Schedule disabled\n";
+prog_char string_18[] PROGMEM = "Today is an EVEN day.\n";
+prog_char string_19[] PROGMEM = "Today is an ODD day.\n";
 
 PROGMEM const char *string_table[] =
 {   
@@ -111,7 +113,9 @@ PROGMEM const char *string_table[] =
   string_14,
   string_15,
   string_16,
-  string_17
+  string_17,
+  string_18,
+  string_19
 };
 
 prog_char stringHelp_0[]  PROGMEM = "Available Commands:\n";
@@ -314,9 +318,17 @@ void waterZone(int zone) {
 }
 
 void printLoginMessage() {
+  boolean isEvenDay = ((now.unixtime() / 86400L) % 2 == 0);
   e_printString(0); // "\nWelcome to TJ's Sprinkler.\nThe current time is:"
   e_printTime();
   client.println("");
+ 
+  if (isEvenDay) {
+    e_printString(18);
+  } else {
+    e_printString(19);
+  }
+
   e_printString(1); // "Enter ? for help"
   printPrompt();
 }
@@ -619,21 +631,21 @@ void loop() {
   if (lastMinute != now.minute()) {
     lastMinute = now.minute();
 
-    // Figure out if it's an even or odd day.
+    // Figure out if it's an even or odd day. (use number of days since the unix epoch, not the current day of the month for a better even/odd pattern regardless of months with an odd number of days)
     boolean isEvenDay = ((now.unixtime() / 86400L) % 2 == 0);
 
     for (int i = 0; i < SCHEDULELISTSIZE; i++) {
       // TODO: this is a nasty looking if statement. Need to make it easier to read.
-      if (scheduleList[i].deleted == 0 &&
-        scheduleList[i].enabled == 1 &&
-        scheduleList[i].hour == now.hour() &&
-        scheduleList[i].minute == now.minute() &&
-        (
-      (scheduleList[i].days == 1) ||
-        (scheduleList[i].days == 2 && isEvenDay) ||
-        (scheduleList[i].days == 3 && !isEvenDay)
-        )
-        ) {
+      if (scheduleList[i].deleted == 0 && // Not deleted
+          scheduleList[i].enabled == 1 && // Is Enabled
+          scheduleList[i].hour == now.hour() && // Is the current hour
+          scheduleList[i].minute == now.minute() && // Is the current minute
+          (
+           (scheduleList[i].days == 1) || // This is an every-day schedule
+           (scheduleList[i].days == 2 && isEvenDay) || // This is an even-day schedule, and today is an even day.
+           (scheduleList[i].days == 3 && !isEvenDay) // This is an odd-day schedule, and today is an odd day.
+          )
+         ) {
         waterZone(scheduleList[i].zone);
       }
     }
