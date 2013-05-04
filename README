@@ -3,7 +3,7 @@ This is an arduino project for an open source sprinkler control system.
 * Optionally uses EthernetDHCP.h from http://gkaindl.com/software/arduino-ethernet
 * Requires RTClib.h from https://github.com/adafruit/RTClib
 
-Photos and more info: http://hypnopompia.github.com/Arduino-Sprinkler/
+Photos and more info: http://havocstudios.com/
 
 Features:
 * Telnet server using the Wiznet ethernet module
